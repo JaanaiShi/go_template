@@ -8,13 +8,9 @@ import (
 	gormLogger "gorm.io/gorm/logger"
 )
 
-var (
-	_db *gorm.DB
-)
-
 // @description: 初始化Mysql数据库
 // @return: *gorm.DB
-func GormMysql() (*gorm.DB, error) {
+func Init() {
 
 	m := common.Conf.DB
 	if m.Name == "" {
@@ -39,7 +35,8 @@ func GormMysql() (*gorm.DB, error) {
 		}
 		sqlDB.SetMaxIdleConns(m.MaxIdle)
 		sqlDB.SetMaxOpenConns(m.MaxOpen)
-		return db, nil
+		common.DB = db
+		return
 	}
 }
 

@@ -3,12 +3,19 @@ db:
   port: 3306
   name: flint
   username: root
-  password: admin123123
+  password: admin123
   maxIdle: 10
   maxOpen: 100
   dbLogMode: true  # 是否开启gorm日志
   logZap: "silent"
-
 system:
-  log_level: info
-  log_path: ./log
+  logLevel: info
+  logPath: ./log
+redis:
+  host: 127.0.0.1
+  port: 6379
+  maxIdle: 5   # redisPool数量
+  masterName: "master"
+  password: ""
+  redisType: "redis" # redis为本机redis模式，sentinel为redis集群哨兵模式
+  db: 1

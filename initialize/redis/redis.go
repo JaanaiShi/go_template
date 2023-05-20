@@ -3,24 +3,24 @@ package redis
 import (
 	"fmt"
 	"github.com/FZambia/sentinel"
+	"github.com/JaanaiShi/flint/common"
 	"github.com/gomodule/redigo/redis"
-	"go.uber.org/zap"
+	"strconv"
 	"strings"
 	"time"
 )
 
 var (
-	RedisConnPool *redis.Pool
-	ErrNil        = "redigo: nil returned"
+	ErrNil = "redigo: nil returned"
 )
 
-func InitRedis(c C) {
-	redisAddr := c.RedisBase.RedisAddr
-	redisType := c.RedisBase.RedisType
-	MaxIdle := c.RedisBase.MaxIdle
-	masterName := c.RedisBase.MasterName
-	password := c.RedisBase.RedisPassword
-	db := c.RedisBase.Db
+func Init() {
+	redisAddr := common.Conf.Redis.Host + ":" + strconv.Itoa(common.Conf.Redis.Port)
+	redisType := common.Conf.Redis.RedisType
+	MaxIdle := common.Conf.Redis.MaxIdle
+	masterName := common.Conf.Redis.MasterName
+	password := common.Conf.Redis.Password
+	db := common.Conf.Redis.Db
 	if redisType == "sentinel" {
 		redisAddrs := strings.Split(redisAddr, ",")
 		sntnl := &sentinel.Sentinel{
@@ -36,7 +36,7 @@ func InitRedis(c C) {
 			},
 		}
 
-		RedisConnPool = &redis.Pool{
+		common.RedisConnPool = &redis.Pool{
 			MaxIdle:     MaxIdle,
 			IdleTimeout: 240 * time.Second,
 			Dial: func() (redis.Conn, error) {
@@ -55,7 +55,7 @@ func InitRedis(c C) {
 			TestOnBorrow: CheckRedisRole,
 		}
 	} else {
-		RedisConnPool = &redis.Pool{
+		common.RedisConnPool = &redis.Pool{
 			MaxIdle:     MaxIdle,
 			IdleTimeout: 240 * time.Second,
 			// Dial or DialContext must be set. When both are set, DialContext takes precedence over Dial.
@@ -65,7 +65,6 @@ func InitRedis(c C) {
 				c, err := redis.Dial("tcp", redisAddr, setdb, pd)
 				if err != nil {
 					c.Close()
-					GVA_LOG.Info("初始化redis失败", zap.String("status", "失败"))
 					panic(err)
 				}
 				return c, nil
@@ -80,14 +79,4 @@ func CheckRedisRole(c redis.Conn, t time.Time) error {
 	} else {
 		return nil
 	}
-}
-
-func GetRedisPool() *redis.Pool {
-	return RedisConnPool
-}
-
-func GetRedis() (redis.Conn, error) {
-	conn := RedisConnPool.Get()
-	err := conn.Err()
-	return conn, err
 }

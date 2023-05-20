@@ -19,9 +19,9 @@ func Init() {
 	mode := os.Getenv("ServerMode")
 	fmt.Println(os.Getwd())
 	if mode == "" {
-		fileName = "config.yaml"
+		fileName = "config.yml"
 	} else {
-		fileName = "config-" + mode + ".yaml"
+		fileName = "config-" + mode + ".yml"
 	}
 
 	// 文件路径如何设置
@@ -35,4 +35,5 @@ func Init() {
 	}
 
 	common.Conf = &config
+
 }
