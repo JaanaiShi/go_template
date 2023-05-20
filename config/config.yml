@@ -1,0 +1,14 @@
+db:
+  host: 127.0.0.1
+  port: 3306
+  name: flint
+  username: root
+  password: admin123123
+  maxIdle: 10
+  maxOpen: 100
+  dbLogMode: true  # 是否开启gorm日志
+  logZap: "silent"
+
+system:
+  log_level: info
+  log_path: ./log
